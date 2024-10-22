@@ -21,12 +21,11 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const response = await axios.post('https://mydukabackend.onrender.com/api/sales', newSale);
-      console.log('Sale added:', response.data);
-      setSalesData([...salesData, response.data]); // Update sales data with the new sale
+      console.log(response.data);
+      setSalesData([...salesData, response.data]); // Use the response to get the correct ID
       setNewSale({ product_id: '', quantity: '' }); // Reset form
     } catch (error) {
       console.error('Error adding sale:', error);
-      alert('Error adding sale. Please check the network or backend.');
     }
   };
 
@@ -35,24 +34,23 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const response = await axios.post('https://mydukabackend.onrender.com/api/products', newProduct);
-      console.log('Product added:', response.data); // Log the response from the server
-      setProductData([...productData, response.data]); // Add new product to the product list
+      console.log(response.data); // Log the response from the server
+      setProductData([...productData, response.data]); // Use the response to get the correct ID
       setNewProduct({ name: '', description: '', price: '', category: '' }); // Reset form
     } catch (error) {
       console.error('Error adding product:', error);
-      alert('Error adding product. Please check the network or backend.');
     }
   };
 
-  // Fetch products on component mount
+  // Fetch products on mount
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get('https://mydukabackend.onrender.com/api/products');
-        setProductData(response.data); // Set fetched product data
+        setProductData(response.data);
       } catch (error) {
         console.error('Error fetching products:', error);
-        alert('Error fetching products. Please check the network or backend.');
+        alert('Error fetching products: ' + error.message); // Alert user
       }
     };
     fetchProducts();
@@ -193,7 +191,7 @@ const AdminDashboard = () => {
               </tbody>
             </table>
           </div>
-        )} 
+        )}
 
         {activeTab === 'payments' && (
           <div>
