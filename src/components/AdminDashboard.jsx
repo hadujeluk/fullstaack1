@@ -9,6 +9,7 @@ const AdminDashboard = () => {
   const [productData, setProductData] = useState([]);
   const [newProduct, setNewProduct] = useState({ name: '', description: '', price: '', category: '' });
   const [paymentsData, setPaymentsData] = useState([]);
+  const [newPayment, setNewPayment] = useState({ phone: '', amount: '' }); // State for new payment
 
   const navigate = useNavigate();
 
@@ -20,9 +21,9 @@ const AdminDashboard = () => {
   const handleAddSale = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://127.0.0.1:5000//api/sales', newSale);
+      const response = await axios.post('http://127.0.0.1:5000/api/sales', newSale);
       console.log(response.data);
-      setSalesData([...salesData, response.data]); // Use the response to get the correct ID
+      setSalesData([...salesData, response.data]);
       setNewSale({ product_id: '', quantity: '' }); // Reset form
     } catch (error) {
       console.error('Error adding sale:', error);
@@ -34,11 +35,24 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const response = await axios.post('http://127.0.0.1:5000/api/products', newProduct);
-      console.log(response.data); // Log the response from the server
-      setProductData([...productData, response.data]); // Use the response to get the correct ID
+      console.log(response.data);
+      setProductData([...productData, response.data]);
       setNewProduct({ name: '', description: '', price: '', category: '' }); // Reset form
     } catch (error) {
       console.error('Error adding product:', error);
+    }
+  };
+
+  // Handle making a payment
+  const handleAddPayment = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/api/mpesa/payment', newPayment);
+      console.log(response.data);
+      setPaymentsData([...paymentsData, response.data]);
+      setNewPayment({ phone: '', amount: '' }); // Reset form
+    } catch (error) {
+      console.error('Error making payment:', error);
     }
   };
 
@@ -195,7 +209,42 @@ const AdminDashboard = () => {
         {activeTab === 'payments' && (
           <div>
             <h2 className="text-2xl mb-4">Payments</h2>
-            {/* Payment form can be added here */}
+            <form onSubmit={handleAddPayment} className="mb-4">
+              <input
+                type="text"
+                placeholder="Phone Number"
+                value={newPayment.phone}
+                onChange={(e) => setNewPayment({ ...newPayment, phone: e.target.value })}
+                className="border p-2 mb-2 w-full"
+                required
+              />
+              <input
+                type="number"
+                placeholder="Amount"
+                value={newPayment.amount}
+                onChange={(e) => setNewPayment({ ...newPayment, amount: e.target.value })}
+                className="border p-2 mb-2 w-full"
+                required
+              />
+              <button type="submit" className="bg-yellow-400 hover:bg-yellow-500 rounded-md text-white py-2 px-4">Make Payment</button>
+            </form>
+            <h3 className="text-xl mt-4">Payments Data</h3>
+            <table className="min-w-full bg-white border border-gray-300">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="border border-gray-300 px-4 py-2">Phone</th>
+                  <th className="border border-gray-300 px-4 py-2">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paymentsData.map((payment, index) => (
+                  <tr key={index} className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}>
+                    <td className="border border-gray-300 px-4 py-2">{payment.phone}</td>
+                    <td className="border border-gray-300 px-4 py-2">{payment.amount}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
