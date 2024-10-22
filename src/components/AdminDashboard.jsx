@@ -21,11 +21,12 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const response = await axios.post('https://mydukabackend.onrender.com/api/sales', newSale);
-      console.log(response.data);
-      setSalesData([...salesData, response.data]); // Use the response to get the correct ID
+      console.log('Sale added:', response.data);
+      setSalesData([...salesData, response.data]); // Update sales data with the new sale
       setNewSale({ product_id: '', quantity: '' }); // Reset form
     } catch (error) {
       console.error('Error adding sale:', error);
+      alert('Error adding sale. Please check the network or backend.');
     }
   };
 
@@ -34,22 +35,24 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const response = await axios.post('https://mydukabackend.onrender.com/api/products', newProduct);
-      console.log(response.data); // Log the response from the server
-      setProductData([...productData, response.data]); // Use the response to get the correct ID
+      console.log('Product added:', response.data); // Log the response from the server
+      setProductData([...productData, response.data]); // Add new product to the product list
       setNewProduct({ name: '', description: '', price: '', category: '' }); // Reset form
     } catch (error) {
       console.error('Error adding product:', error);
+      alert('Error adding product. Please check the network or backend.');
     }
   };
 
-  // Fetch products on mount
+  // Fetch products on component mount
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get('https://mydukabackend.onrender.com/api/products');
-        setProductData(response.data);
+        setProductData(response.data); // Set fetched product data
       } catch (error) {
         console.error('Error fetching products:', error);
+        alert('Error fetching products. Please check the network or backend.');
       }
     };
     fetchProducts();
