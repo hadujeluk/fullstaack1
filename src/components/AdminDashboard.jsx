@@ -16,13 +16,46 @@ const AdminDashboard = () => {
     navigate('/'); // Redirect to landing page
   };
 
+  // Fetch products on mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('https://mydukabackend.onrender.com/api/products');
+        setProductData(response.data);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    const fetchSales = async () => {
+      try {
+        const response = await axios.get('https://mydukabackend.onrender.com/api/sales');
+        setSalesData(response.data);
+      } catch (error) {
+        console.error('Error fetching sales:', error);
+      }
+    };
+
+    const fetchPayments = async () => {
+      try {
+        const response = await axios.get('https://mydukabackend.onrender.com/api/payments');
+        setPaymentsData(response.data);
+      } catch (error) {
+        console.error('Error fetching payments:', error);
+      }
+    };
+
+    fetchProducts();
+    fetchSales();
+    fetchPayments();
+  }, []);
+
   // Handle adding a new sale
   const handleAddSale = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post('https://mydukabackend.onrender.com/api/sales', newSale);
-      console.log(response.data);
-      setSalesData([...salesData, response.data]); // Use the response to get the correct ID
+      setSalesData([...salesData, response.data]);
       setNewSale({ product_id: '', quantity: '' }); // Reset form
     } catch (error) {
       console.error('Error adding sale:', error);
@@ -34,27 +67,12 @@ const AdminDashboard = () => {
     e.preventDefault();
     try {
       const response = await axios.post('https://mydukabackend.onrender.com/api/products', newProduct);
-      console.log(response.data); // Log the response from the server
-      setProductData([...productData, response.data]); // Use the response to get the correct ID
+      setProductData([...productData, response.data]);
       setNewProduct({ name: '', description: '', price: '', category: '' }); // Reset form
     } catch (error) {
       console.error('Error adding product:', error);
     }
   };
-
-  // Fetch products on mount
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get('https://mydukabackend.onrender.com/api/products');
-        setProductData(response.data);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        alert('Error fetching products: ' + error.message); // Alert user
-      }
-    };
-    fetchProducts();
-  }, []);
 
   return (
     <div className="flex h-screen">
@@ -196,7 +214,24 @@ const AdminDashboard = () => {
         {activeTab === 'payments' && (
           <div>
             <h2 className="text-2xl mb-4">Payments</h2>
-            {/* Payment form can be added here */}
+            <table className="min-w-full bg-white border border-gray-300">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="border border-gray-300 px-4 py-2">ID</th>
+                  <th className="border border-gray-300 px-4 py-2">Amount</th>
+                  <th className="border border-gray-300 px-4 py-2">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paymentsData.map((payment) => (
+                  <tr key={payment.id} className={`${paymentsData.indexOf(payment) % 2 === 0 ? 'bg-gray-100' : 'bg-white'}`}>
+                    <td className="border border-gray-300 px-4 py-2">{payment.id}</td>
+                    <td className="border border-gray-300 px-4 py-2">{payment.amount}</td>
+                    <td className="border border-gray-300 px-4 py-2">{new Date(payment.date).toLocaleDateString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
