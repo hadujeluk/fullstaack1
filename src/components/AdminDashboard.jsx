@@ -193,7 +193,7 @@ const AdminDashboard = () => {
               </tbody>
             </table>
           </div>
-        )}
+        )} 
 
         {activeTab === 'payments' && (
           <div>
